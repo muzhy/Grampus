@@ -1,0 +1,10 @@
+server:
+  port: 8080
+
+database:
+  driver: sqlite3
+  DSN : "./data/grampus.db
+
+log:
+  level: info
+  output: file
