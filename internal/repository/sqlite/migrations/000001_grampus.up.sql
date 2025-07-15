@@ -60,15 +60,15 @@ CREATE INDEX IF NOT EXISTS idx_account_book_id ON account(book_id);
 CREATE INDEX IF NOT EXISTS idx_account_name ON account(name);
 
 -- 交易，交易的具体细节在trans_item中
-CREATE TABLE IF NOT EXISTS transaction (
+CREATE TABLE IF NOT EXISTS trans (
     id TEXT PRIMARY KEY, 
     book_id TEXT NOT NULL, 
-    transaction_date TIMESTAMP NOT NULL, 
+    trans_date TIMESTAMP NOT NULL, 
     description TEXT,
     FOREIGN KEY (book_id) REFERENCES book(id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_transaction_book_id ON transaction(book_id);
+CREATE INDEX IF NOT EXISTS idx_trans_book_id ON trans(book_id);
 
 -- 交易的具体交易项，每笔交易至少包含两个交易项
 -- amount_num 和 amount_denom结合起来表示精确的数字
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS trans_item(
     amount_num INTEGER NOT NULL,
     amount_denom INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (trans_id) REFERENCES transaction(id),
+    FOREIGN KEY (trans_id) REFERENCES trans(id),
     FOREIGN KEY (account_id) REFERENCES account(id)
 );
 

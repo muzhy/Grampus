@@ -32,7 +32,7 @@ func LoadConfig() (*Config, error) {
 	viper.SetDefault("server.port", "8080")
 	viper.SetDefault("log.level", "info")
 	viper.SetDefault("database.driver", "sqlite3")
-	viper.SetDefault("database.DSN", "./data/grampus.db")
+	viper.SetDefault("database.DSN", "data/grampus.db")
 	viper.SetDefault("log.output", "stdout")
 	viper.SetDefault("log.path", "./logs")
 

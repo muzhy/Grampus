@@ -12,7 +12,7 @@ import (
 	"go.uber.org/zap"
 )
 
-//go:embed *.sql
+//go:embed migrations/*.sql
 var migrationsFS embed.FS
 
 type SqliteBooksRepository struct {
@@ -29,7 +29,7 @@ func NewSqliteBooksRepository(db *sqlx.DB, config *config.DatabaseConfig) *Sqlit
 
 // init sqlite datebase
 func (r *SqliteBooksRepository) InitBooksDB() error {
-	sourceDriver, err := iofs.New(migrationsFS, r.config.DSN)
+	sourceDriver, err := iofs.New(migrationsFS, "migrations")
 	if err != nil {
 		return err
 	}
@@ -39,18 +39,21 @@ func (r *SqliteBooksRepository) InitBooksDB() error {
 		return err
 	}
 
-	// 5. 使用新的源驱动来创建 migrate 实例
 	m, err := migrate.NewWithInstance("iofs", sourceDriver, "sqlite3", dbDriver)
 	if err != nil {
 		return err
 	}
 
 	err = m.Up()
-	if err != nil {
+	if err != nil && err != migrate.ErrNoChange {
 		return err
 	}
 
-	zap.L().Info("Init Books DB success!")
+	if err == migrate.ErrNoChange {
+		zap.L().Info("Init Books DB: no changes to apply")
+	} else {
+		zap.L().Info("Init Books DB success!")
+	}
 
 	return nil
 }
