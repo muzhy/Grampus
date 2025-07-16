@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"Grampus/internal/books"
+	"Grampus/internal/booking"
 	"Grampus/internal/config"
 	"os"
 	"path/filepath"
@@ -14,7 +14,13 @@ import (
 )
 
 type Repository struct {
-	BookRepository books.BookRepository
+	BookRepository booking.BookingRepository
+	db             *sqlx.DB
+}
+
+func (repo *Repository) Close() {
+	repo.BookRepository = nil
+	repo.db.Close()
 }
 
 func NewRepository(config *config.DatabaseConfig) *Repository {
@@ -63,6 +69,7 @@ func createSqliteRepo(config *config.DatabaseConfig) (*Repository, error) {
 
 	return &Repository{
 		BookRepository: sqliteBooksRepo,
+		db:             db,
 	}, nil
 }
 

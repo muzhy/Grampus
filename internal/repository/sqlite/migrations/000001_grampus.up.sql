@@ -1,27 +1,61 @@
 PRAGMA foreign_keys = ON;
 
+-- 账户类型表
+CREATE TABLE IF NOT EXISTS account_type (
+    type TEXT PRIMARY KEY
+);
+
+INSERT INTO account_type (type) VALUES
+    ('asset'),
+    ('liability'),
+    ('equity'),
+    ('revenue'),
+    ('expense');
+
+-- 商品类型表
+CREATE TABLE IF NOT EXISTS commodity_type (
+    type TEXT PRIMARY KEY
+);
+
+INSERT INTO commodity_type (type) VALUES
+    ('currency');
+
 -- 商品，货币也是一种商品
 CREATE TABLE IF NOT EXISTS commodities(
     id TEXT PRIMARY KEY,
-    type TEXT NOT NULL,     -- 类型，用来表示货币，股票，基金，或者用户自定义的
-    mnemonic TEXT NOT NULL, -- 商品名字简称，方便记忆
-    fullname TEXT NOT NULL, -- 完整名称
-    fraction INTEGER NOT NULL, -- 商品最小分割单位
-    quote_flag INTEGER NOT NULL DEFAULT 0, -- 是否需要自动从外部获取价格信息
-    quote_source TEXT DEFAULT NULL -- quote_flag为1时，使用quore_source获取
+    type TEXT NOT NULL,                         -- 类型，用来表示货币，股票，基金，或者用户自定义的
+    mnemonic TEXT NOT NULL,                     -- 商品名字简称，方便记忆
+    fullname TEXT NOT NULL,                     -- 完整名称
+    fraction INTEGER NOT NULL,                  -- 商品最小分割单位
+    quote_flag INTEGER NOT NULL DEFAULT 0,      -- 是否需要自动从外部获取价格信息
+    quote_source TEXT DEFAULT NULL,             -- quote_flag为1时，使用quore_source获取
+    FOREIGN KEY (type) REFERENCES commodity_type(type)
 );
+
+INSERT INTO commodities (id, type, mnemonic, fullname, fraction, quote_flag, quote_source)
+VALUES
+    ('CNY', 'currency', 'CNY', 'Chinese Yuan', 100, 0, NULL),
+    ('USD', 'currency', 'USD', 'US Dollar', 100, 0, NULL),
+    ('EUR', 'currency', 'EUR', 'Euro', 100, 0, NULL),
+    ('JPY', 'currency', 'JPY', 'Japanese Yen', 100, 0, NULL),
+    ('GBP', 'currency', 'GBP', 'British Pound', 100, 0, NULL),
+    ('AUD', 'currency', 'AUD', 'Australian Dollar', 100, 0, NULL),
+    ('CAD', 'currency', 'CAD', 'Canadian Dollar', 100, 0, NULL),
+    ('CHF', 'currency', 'CHF', 'Swiss Franc', 100, 0, NULL),
+    ('HKD', 'currency', 'HKD', 'Hong Kong Dollar', 100, 0, NULL),
+    ('SGD', 'currency', 'SGD', 'Singapore Dollar', 100, 0, NULL);
 
 -- price 价格
 -- 一样商品在不同的时间会有不同的价格，通过price
 -- 来记录在不同商品在不同时间的价格
 CREATE TABLE IF NOT EXISTS price(
     id TEXT PRIMARY KEY,
-    comm_id TEXT NOT NULL, -- 商品id
-    currency_id TEXT NOT NULL, -- 货币id，注意货币也是一种商品
+    comm_id TEXT NOT NULL,                  -- 商品id
+    currency_id TEXT NOT NULL,              -- 货币id，注意货币也是一种商品
     date TIMESTAMP NOT NULL,  
-    source TEXT NOT NULL, -- 价格来源
-    type TEXT NOT NULL, -- 价格类型，比如买入价，卖出价等
-    value_num INTEGER NOT NULL, -- 与value_denom一起，表示价格的精确值
+    source TEXT NOT NULL,                   -- 价格来源
+    type TEXT NOT NULL,                     -- 价格类型，比如买入价，卖出价等
+    value_num INTEGER NOT NULL,             -- 与value_denom一起，表示价格的精确值
     value_denom INTEGER NOT NULL,
     FOREIGN KEY (comm_id) REFERENCES commodities(id),
     FOREIGN KEY (currency_id) REFERENCES commodities(id)
@@ -44,16 +78,17 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_book_name ON book(name);
 -- current_num 和 current_denom组合起来表示当前科目的余额，方便统计
 CREATE TABLE IF NOT EXISTS account (
     id TEXT PRIMARY KEY, 
-    book_id TEXT NOT NULL,  -- 所属账簿的id，方便进行检索
-    parent_id TEXT DEFAULT NULL,  -- 通过parent_id关联父级科目，null表示顶级科目
-    comm_id TEXT NOT NULL,      -- 每个科目都需要关联商品，货币，或者股票或其他
+    book_id TEXT NOT NULL,          -- 所属账簿的id，方便进行检索
+    parent_id TEXT DEFAULT NULL,    -- 通过parent_id关联父级科目，null表示顶级科目
+    comm_id TEXT NOT NULL,          -- 每个科目都需要关联商品，货币，或者股票或其他
     name TEXT NOT NULL,
     type TEXT NOT NULL,
     current_num INTEGER NOT NULL,
     current_denom INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (book_id) REFERENCES book(id),
-    FOREIGN KEY (parent_id) REFERENCES account(id)
+    FOREIGN KEY (parent_id) REFERENCES account(id),
+    FOREIGN KEY (type) REFERENCES account_type(type)
 );
 
 CREATE INDEX IF NOT EXISTS idx_account_book_id ON account(book_id);

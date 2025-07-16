@@ -16,3 +16,6 @@ DROP INDEX IF EXISTS idx_price_comm_id;
 DROP TABLE IF EXISTS price;
 
 DROP TABLE IF EXISTS commodities;
+
+DROP TABLE IF EXISTS account_type;
+DROP TABLE IF EXISTS commodity_type;

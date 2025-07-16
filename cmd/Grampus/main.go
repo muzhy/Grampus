@@ -43,6 +43,7 @@ func main() {
 		logger.Fatal("Failed to create repository based on the database configuration")
 		return
 	}
+	defer repo.Close()
 	// TODO 将sqliteRepo作为参数传递给其他模块的初始化函数
 
 	// TODO 调用各个模块，由模块自身注册路由
@@ -94,5 +95,5 @@ func setupRoutter(router *gin.Engine, repo *repository.Repository) {
 		})
 	})
 
-	port.AddBookRouter(router, repo.BookRepository)
+	port.AddBookingRouter(router, repo.BookRepository)
 }
