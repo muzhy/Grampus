@@ -8,9 +8,9 @@ const (
 	Ok               ErrCode = 0   // 无错误
 	ErrInternal      ErrCode = 500 // 内部错误
 	ErrAlreadyExists ErrCode = 401 // 数据已存在，不允许重复创建
-	ErrInvalidData   ErrCode = 402 // 数据内容错误
 	ErrInvalidParam  ErrCode = 403 // 参数错误
 	ErrDbError       ErrCode = 600 // 数据库相关的错误
+	ErrDbEmpty       ErrCode = 601 // 查询的数据为空
 )
 
 type Error struct {

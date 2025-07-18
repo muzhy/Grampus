@@ -77,3 +77,15 @@ func createPostgresRepo(config *config.DatabaseConfig) *Repository {
 	zap.L().Error("Postgres repository is not implemented yet")
 	return nil // TODO: Implement Postgres repository initialization
 }
+
+// func queryOne[T any](db sqlx.Ext, querySql string, args ...interface{}) (*T, error) {
+// 	var res T
+// 	err := db.QueryRowx(querySql, args...).StructScan(&res)
+// 	if err != nil {
+// 		if err == sql.ErrNoRows {
+// 			return nil, internal.Error{Code: internal.ErrDbEmpty, Err: err, Msg: "Query data not exist"}
+// 		}
+// 		return nil, internal.Error{Code: internal.ErrDbError, Err: err, Msg: "Query from database failed"}
+// 	}
+// 	return &res, nil
+// }

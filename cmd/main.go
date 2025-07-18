@@ -21,7 +21,7 @@ import (
 func main() {
 	config, err := config.LoadConfig()
 	if err != nil {
-		log.Fatalf("Error loading configuration:", err)
+		log.Fatalf("Error loading configuration:", err.Error())
 	}
 
 	logger := logger.NewLogger(&config.Log)

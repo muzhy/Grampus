@@ -87,7 +87,6 @@ CREATE TABLE IF NOT EXISTS account (
     current_denom INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (book_id) REFERENCES book(id),
-    FOREIGN KEY (parent_id) REFERENCES account(id),
     FOREIGN KEY (type) REFERENCES account_type(type)
 );
 

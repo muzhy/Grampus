@@ -39,7 +39,7 @@ func NewLogger(logConfig *config.LogConfig) *zap.Logger {
 			Filename:   logFilePath,
 			MaxSize:    10,
 			MaxBackups: 5,
-			MaxAge:     30,
+			MaxAge:     1,
 			Compress:   false,
 		})
 	} else {
