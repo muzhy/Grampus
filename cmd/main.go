@@ -13,6 +13,7 @@ import (
 	"go.uber.org/zap"
 
 	"Grampus/internal/config"
+	"Grampus/internal/ledger"
 	"Grampus/internal/logger"
 	"Grampus/internal/port"
 	"Grampus/internal/repository"
@@ -21,7 +22,7 @@ import (
 func main() {
 	config, err := config.LoadConfig()
 	if err != nil {
-		log.Fatalf("Error loading configuration:", err.Error())
+		log.Fatalf("Error loading configuration:%v", err.Error())
 	}
 
 	logger := logger.NewLogger(&config.Log)
@@ -38,14 +39,13 @@ func main() {
 	// 注册全局middleware
 	setupGlobalMiddleware(router)
 
-	repo := repository.NewRepository(&config.Database)
-	if repo == nil {
+	// repo := repository.NewRepository(&config.Database)
+	repo, err := repository.NewSqliteRepo(&config.Database)
+	if err != nil {
 		logger.Fatal("Failed to create repository based on the database configuration")
 		return
 	}
 	defer repo.Close()
-	// TODO 将sqliteRepo作为参数传递给其他模块的初始化函数
-
 	// TODO 调用各个模块，由模块自身注册路由
 	setupRoutter(router, repo)
 	logger.Info("Init Grampus Router successfully")
@@ -82,7 +82,7 @@ func setupGlobalMiddleware(router *gin.Engine) {
 	router.Use(gin.Recovery())
 }
 
-func setupRoutter(router *gin.Engine, repo *repository.Repository) {
+func setupRoutter(router *gin.Engine, repo ledger.Repo) {
 	router.GET("/health", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
 			"status": "ok",
@@ -95,5 +95,6 @@ func setupRoutter(router *gin.Engine, repo *repository.Repository) {
 		})
 	})
 
-	port.AddBookingRouter(router, repo.BookRepository)
+	// port.AddBookingRouter(router, repo.BookRepository)
+	port.AddLedgerRoutter(router, repo)
 }

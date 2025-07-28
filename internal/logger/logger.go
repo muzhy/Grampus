@@ -38,9 +38,10 @@ func NewLogger(logConfig *config.LogConfig) *zap.Logger {
 		writerSyncer = zapcore.AddSync(&lumberjack.Logger{
 			Filename:   logFilePath,
 			MaxSize:    10,
-			MaxBackups: 5,
-			MaxAge:     1,
+			MaxBackups: 60,
+			MaxAge:     30,
 			Compress:   false,
+			LocalTime:  true,
 		})
 	} else {
 		writerSyncer = zapcore.Lock(os.Stdout)
